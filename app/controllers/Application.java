@@ -19,7 +19,7 @@ public class Application extends Controller {
 
     public static Result index() {
         Switch sw1 = new Switch(3, "Lamp 1");
-        sw1.setSwitched(true);
+        sw1.setValue(true);
 
         return ok(index.render());
     }
