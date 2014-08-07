@@ -1,0 +1,3 @@
+- !!models.Switch
+    name: Lamp 1
+    pinNumber: 1
