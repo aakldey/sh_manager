@@ -6,7 +6,6 @@ import play.Logger;
 import play.libs.ws.*;
 import play.db.ebean.Model;
 import play.libs.F.*;
-import play.mvc.Http;
 
 import javax.persistence.*;
 
@@ -14,32 +13,40 @@ import javax.persistence.*;
 public class Info extends Model {
 
     @Id
-    Long id;
+    public Long id;
 
     public String name;
 
     public int pinNumber;
+
+    public String signature;
+
+    @ManyToOne
+    public DeviceGroup deviceGroup;
 
     private int value;
 
     public Info(int pinNumber, String name) {
         this.pinNumber = pinNumber;
         this.name = name;
-        this.value = getValue();
+        updateValue();
     }
 
-    public int getValue() {
+    public void updateValue() {
         try {
             Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/" + pinNumber).get();
             JsonNode json = result.get(10000).asJson();
             int value = json.get(Integer.toString(pinNumber)).asInt();
             this.value = value;
-            Logger.info("INFO: getting analog pin " + pinNumber + " value");
-            return value;
+            this.save();
+            Logger.info("getting analog pin " + pinNumber + " value");
         } catch (Throwable e) {
-            Logger.info("ERROR: error getting analog pin " + pinNumber + " value from Info " + name + ". \n" + e.getMessage());
-            return -1;
+            Logger.error("error getting analog pin " + pinNumber + " value from Info " + name + ". \n" + e.getMessage());
         }
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public static Finder<Long, Info> find = new Finder<Long, Info>(Long.class, Info.class);

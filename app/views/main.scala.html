@@ -37,6 +37,9 @@
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
+                        <li @if(title == Messages("home.title")) {class="active"}><a href="@routes.Application.index()">@Messages("home.title")</a></li>
+                        <li @if(title == Messages("taks.title")) {class="active"}><a href="@routes.Application.tasks()">@Messages("tasks.title")</a></li>
+                        <li @if(title == Messages("config.title")) {class="active"}><a href="@routes.Application.config()">@Messages("config.title")</a></li>
                     </ul>
                 </div><!-- /.nav-collapse -->
             </div><!-- /.container -->

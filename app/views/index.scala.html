@@ -1,4 +1,40 @@
-@main(Messages("dashboard.title")) {
-    Here will be dashboard
+@(groups: List[DeviceGroup])
 
+@main(Messages("home.title")) {
+    <ol class="breadcrumb">
+        <li class="active">@Messages("home.title")</li>
+    </ol>
+    <script src="@routes.Assets.at("js/home.js")"></script>
+
+    <div class="row">
+        <div class="col-md-8">
+                    <ul class="list-group">
+                        @for(group <- groups.sortBy(_.name)) {
+                        @if(group.switches.size() != 0 || group.sliders.size() != 0 || group.infos.size() != 0) {
+                            <li class="list-group-item disabled">@group.name</li>
+                        }
+                            @for(switch <- group.switches.sortBy(_.name)) {
+                                <li class="list-group-item">@switch.name</li>
+                            }
+
+                            @for(info <- group.infos.sortBy(_.name)) {
+                                <input type="hidden" name="info" value="@info.id"/>
+                                <li class="list-group-item">@{info.name}: <span name="@info.id">@info.getValue()</span> @info.signature</li>
+                            }
+
+                            @for(slider <- group.sliders.sortBy(_.name)) {
+                                <li class="list-group-item">@slider.name</li>
+                            }
+                        }
+                    </ul>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h5 align="center">@Messages("home.time.today") <i><span name="today"></span></i></h5>
+                    <h3 align="center"><span name="time"></span></h3>
+                </div>
+            </div>
+        </div>
+    </div>
 }

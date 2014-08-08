@@ -1,6 +1,7 @@
 package controllers;
 
-import play.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.libs.Json;
 import play.mvc.*;
 
 import views.html.*;
@@ -17,11 +18,29 @@ public class Application extends Controller {
 
     public static String API_PATH = "http://localhost:8080";
 
-    public static Result index() {
-        Switch sw1 = new Switch(3, "Lamp 1");
-        sw1.setValue(true);
+    public static DeviceGroup DEFAULT_DEVICE_GROUP = DeviceGroup.find.where().eq("name", DeviceGroup.DEFAULT_GROUP_NAME).findUnique();
 
-        return ok(index.render());
+    public static Result index() {
+        return ok(index.render(DeviceGroup.find.all()));
+    }
+
+    public static Result tasks() {
+        return ok(tasks.render());
+    }
+
+    public static Result config() {
+        return ok(config.render());
+    }
+
+    public static Result getInfoValue(Long id) {
+        ObjectNode result = Json.newObject();
+        Info info = Info.find.byId(id);
+        if (info != null) {
+            result.put("value", info.getValue());
+            return ok(result);
+        } else {
+            return badRequest();
+        }
     }
 
 }

@@ -20,6 +20,9 @@ public class Switch extends Model {
 
     public int pinNumber;
 
+    @ManyToOne
+    public DeviceGroup deviceGroup;
+
     private boolean value;
 
     public Switch(int pinNumber, String name) {
@@ -27,7 +30,7 @@ public class Switch extends Model {
         this.name = name;
     }
 
-    public boolean getValue() {
+    public boolean updateValue() {
         try {
             Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + pinNumber).get();
             JsonNode json = result.get(10000).asJson();
@@ -36,10 +39,15 @@ public class Switch extends Model {
             } else {
                 value = true;
             }
-            Logger.info("INFO: getting digital pin " + pinNumber + " value");
+            this.save();
+            Logger.info("getting digital pin " + pinNumber + " value");
         } catch (Throwable e) {
-            Logger.info("ERROR: error getting digital pin " + pinNumber + " value from Switch " + name + ". \n" + e.getMessage());
+            Logger.error("error getting digital pin " + pinNumber + " value from Switch " + name + ". \n" + e.getMessage());
         }
+        return value;
+    }
+
+    public boolean getValue() {
         return value;
     }
 
@@ -48,12 +56,11 @@ public class Switch extends Model {
             String val = value?Application.DIGITAL_HIGH:Application.DIGITAL_LOW;
             Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + pinNumber + "/" + val).get();
             if (result.get(10000).getStatus() == Http.Status.OK) {
-                Logger.info("INFO: setting digital pin " + pinNumber + " value to: " + val);
+                Logger.info("setting digital pin " + pinNumber + " value to: " + val);
                 this.value = value;
             }
-            Logger.info(result.get(1000).getStatusText());
         } catch (Throwable e) {
-            Logger.info("ERROR: error setting digital pin " + pinNumber + " value from Switch " + name + ". \n" + e.getMessage());
+            Logger.error("error setting digital pin " + pinNumber + " value from Switch " + name + ". \n" + e.getMessage());
         }
     }
 

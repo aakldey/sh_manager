@@ -20,24 +20,30 @@ public class Slider extends Model {
 
     public int pinNumber;
 
+    @ManyToOne
+    public DeviceGroup deviceGroup;
+
     private int value;
 
     public Slider(int pinNumber, String name) {
         this.pinNumber = pinNumber;
         this.name = name;
-        this.value = getValue();
+        updateValue();
     }
 
-    public int getValue() {
+    public void updateValue() {
         try {
             Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/" + pinNumber).get();
             JsonNode json = result.get(10000).asJson();
             value = json.get(Integer.toString(pinNumber)).asInt();
-            Logger.info("INFO: getting analog pin " + pinNumber + " value");
-            return value;
+            Logger.info("getting analog pin " + pinNumber + " value");
+            this.save();
         } catch (Throwable e) {
-            Logger.info("ERROR: error getting analog pin " + pinNumber + " value from Slider " + name + ". \n" + e.getMessage());
+            Logger.error("error getting analog pin " + pinNumber + " value from Slider " + name + ". \n" + e.getMessage());
         }
+    }
+
+    public int getValue() {
         return value;
     }
 
@@ -45,12 +51,13 @@ public class Slider extends Model {
         try {
             Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/" + pinNumber + "/" + val).get();
             if (result.get(10000).getStatus() == Http.Status.OK) {
-                Logger.info("INFO: setting pin " + pinNumber + " value to: " + val);
-                this.value = value;
+                Logger.info("setting pin " + pinNumber + " value to: " + val);
+                this.value = val;
+                this.save();
             }
             Logger.info(result.get(1000).getStatusText());
         } catch (Throwable e) {
-            Logger.info("ERROR: error setting analog pin " + pinNumber + " value from Slider " + name + ". \n" + e.getMessage());
+            Logger.error("error setting analog pin " + pinNumber + " value from Slider " + name + ". \n" + e.getMessage());
         }
     }
 
