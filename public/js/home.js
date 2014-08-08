@@ -69,3 +69,30 @@ function updateInfos() {
         });
     });
 }
+
+function switchValue(id) {
+    $.ajax({
+        type: 'GET',
+        url:  '/api/switch/'+id,
+        success: function(msg) {
+            var turnon = $('input[name=turnon]').val();
+            var turnoff = $('input[name=turnoff]').val();
+
+            var on = $('input[name=on]').val();
+            var off = $('input[name=off]').val();
+
+            if (msg == 'true') {
+                $('span[name=switch' + id + ']').html(on);
+                $('span[name=switch' + id + ']').attr('class','label label-success');
+                $('button[name=switchBtn' + id + ']').html(turnoff);
+            } else {
+                $('span[name=switch' + id + ']').html(off);
+                $('span[name=switch' + id + ']').attr('class','label label-danger');
+                $('button[name=switchBtn' + id + ']').html(turnon);
+            }
+        },
+        error: function(msg) {
+
+        }
+    });
+}

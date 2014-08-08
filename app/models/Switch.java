@@ -40,7 +40,7 @@ public class Switch extends Model {
                 value = true;
             }
             this.save();
-            Logger.info("getting digital pin " + pinNumber + " value");
+           // Logger.info("getting digital pin " + pinNumber + " value");
         } catch (Throwable e) {
             Logger.error("error getting digital pin " + pinNumber + " value from Switch " + name + ". \n" + e.getMessage());
         }
@@ -48,6 +48,7 @@ public class Switch extends Model {
     }
 
     public boolean getValue() {
+        this.update();
         return value;
     }
 
@@ -58,6 +59,8 @@ public class Switch extends Model {
             if (result.get(10000).getStatus() == Http.Status.OK) {
                 Logger.info("setting digital pin " + pinNumber + " value to: " + val);
                 this.value = value;
+            } else {
+                Logger.info(result.get(10000).getStatusText());
             }
         } catch (Throwable e) {
             Logger.error("error setting digital pin " + pinNumber + " value from Switch " + name + ". \n" + e.getMessage());

@@ -39,7 +39,7 @@ public class Info extends Model {
             int value = json.get(Integer.toString(pinNumber)).asInt();
             this.value = value;
             this.save();
-            Logger.info("getting analog pin " + pinNumber + " value");
+            //Logger.info("getting analog pin " + pinNumber + " value");
         } catch (Throwable e) {
             Logger.error("error getting analog pin " + pinNumber + " value from Info " + name + ". \n" + e.getMessage());
         }

@@ -36,7 +36,7 @@ public class Slider extends Model {
             Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/" + pinNumber).get();
             JsonNode json = result.get(10000).asJson();
             value = json.get(Integer.toString(pinNumber)).asInt();
-            Logger.info("getting analog pin " + pinNumber + " value");
+            //Logger.info("getting analog pin " + pinNumber + " value");
             this.save();
         } catch (Throwable e) {
             Logger.error("error getting analog pin " + pinNumber + " value from Slider " + name + ". \n" + e.getMessage());

@@ -43,4 +43,14 @@ public class Application extends Controller {
         }
     }
 
+    public static Result switchValue(Long id) {
+        Switch sw = Switch.find.byId(id);
+        if (sw != null) {
+            sw.setValue(!sw.getValue());
+            return ok(Boolean.toString(sw.getValue()));
+        } else {
+            return badRequest();
+        }
+    }
+
 }

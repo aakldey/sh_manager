@@ -8,25 +8,44 @@
 
     <div class="row">
         <div class="col-md-8">
-                    <ul class="list-group">
-                        @for(group <- groups.sortBy(_.name)) {
-                        @if(group.switches.size() != 0 || group.sliders.size() != 0 || group.infos.size() != 0) {
-                            <li class="list-group-item disabled">@group.name</li>
-                        }
-                            @for(switch <- group.switches.sortBy(_.name)) {
-                                <li class="list-group-item">@switch.name</li>
+            <input type="hidden" name="turnon" value="@Messages("home.turnon")"/>
+            <input type="hidden" name="turnoff" value="@Messages("home.turnoff")"/>
+            <input type="hidden" name="on" value="@Messages("home.on")">
+            <input type="hidden" name="off" value="@Messages("home.off")">
+            <ul class="list-group">
+                @for(group <- groups.sortBy(_.name)) {
+                @if(group.switches.size() != 0 || group.sliders.size() != 0 || group.infos.size() != 0) {
+                    <li class="list-group-item disabled">@group.name</li>
+                }
+                    @for(switch <- group.switches.sortBy(_.name)) {
+                        <li class="list-group-item">
+                            @switch.name:
+                            @if(switch.getValue()) {
+                                <span name="switch@switch.id" class="label label-success">@Messages("home.on")</span>
+                                <div class="pull-right">
+                                    <button name="switchBtn@switch.id" class="label label-info" onclick="switchValue(@switch.id)">@Messages("home.turnoff")</button>
+                                </div>
+                            } else {
+                                <span name="switch@switch.id" class="label label-danger">@Messages("home.off")</span>
+                                <div class="pull-right">
+                                    <button name="switchBtn@switch.id" class="label label-info" onclick="switchValue(@switch.id)">@Messages("home.turnon")</button>
+                                </div>
+
                             }
 
-                            @for(info <- group.infos.sortBy(_.name)) {
-                                <input type="hidden" name="info" value="@info.id"/>
-                                <li class="list-group-item">@{info.name}: <span name="@info.id">@info.getValue()</span> @info.signature</li>
-                            }
+                        </li>
+                    }
 
-                            @for(slider <- group.sliders.sortBy(_.name)) {
-                                <li class="list-group-item">@slider.name</li>
-                            }
-                        }
-                    </ul>
+                    @for(info <- group.infos.sortBy(_.name)) {
+                        <input type="hidden" name="info" value="@info.id"/>
+                        <li class="list-group-item">@{info.name}: <span name="@info.id">@info.getValue()</span> @info.signature</li>
+                    }
+
+                    @for(slider <- group.sliders.sortBy(_.name)) {
+                        <li class="list-group-item">@slider.name</li>
+                    }
+                }
+            </ul>
         </div>
         <div class="col-md-4">
             <div class="panel panel-default">
