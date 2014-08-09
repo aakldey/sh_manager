@@ -1,16 +1,31 @@
 package actors;
 
 import akka.actor.UntypedActor;
+import controllers.Application;
+import models.Device;
 import models.Info;
+import actors.UpdateManagerProtocol.*;
+import actors.DeviceManagerProtocol.*;
+import play.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateManagerActor extends UntypedActor {
 
+    public List<Device> devices = new ArrayList<Device>();
+
     @Override
-    public void onReceive(Object msg) throws Exception {
-        if (msg.equals("update")) {
-            for(Info info : Info.find.all()) {
-                info.updateValue();
-            }
+    public void onReceive(Object message) throws Exception {
+        if (message instanceof UpdateDeviceMessage) {
+            // Info
+            devices.stream().forEach(device -> {
+                Application.deviceManager.tell(new AskUpdateMessage(device), getSelf());
+            });
+        } else if (message instanceof SubscribeDeviceMessage) {
+            Logger.info("subscribe new device for updates");
+            Device device = ((SubscribeDeviceMessage) message).device;
+            devices.add(device);
         }
     }
 }

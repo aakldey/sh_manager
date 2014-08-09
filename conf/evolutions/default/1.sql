@@ -23,6 +23,8 @@ create table slider (
   id                        bigint auto_increment not null,
   name                      varchar(255),
   pin_number                integer,
+  range_start               integer,
+  range_end                 integer,
   device_group_id           bigint,
   value                     integer,
   constraint pk_slider primary key (id))

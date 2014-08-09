@@ -2,7 +2,24 @@ $(document).ready(function() {
     updateDate();
     setInterval(updateDate, 1000);
     updateInfos();
-    setInterval(updateInfos, 1000);
+    //setInterval(updateInfos, 1000);
+
+    $('input[name=slider]').each(function (index) {
+        var id = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: 'api/slider/' + id,
+            success: function(msg) {
+                console.log(msg);
+            },
+            error: function(msg) {
+
+            }
+
+        });
+        $(this).slider({ value: 10 });
+    });
+
 });
 
 function updateDate() {

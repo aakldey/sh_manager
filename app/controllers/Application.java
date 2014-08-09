@@ -1,5 +1,6 @@
 package controllers;
 
+import akka.actor.ActorRef;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.libs.Json;
 import play.mvc.*;
@@ -18,6 +19,10 @@ public class Application extends Controller {
 
     public static String API_PATH = "http://localhost:8080";
 
+    public static ActorRef updateManager;
+    public static ActorRef deviceManager;
+    public static ActorRef taskManager;
+
     public static DeviceGroup DEFAULT_DEVICE_GROUP = DeviceGroup.find.where().eq("name", DeviceGroup.DEFAULT_GROUP_NAME).findUnique();
 
     public static Result index() {
@@ -32,25 +37,50 @@ public class Application extends Controller {
         return ok(config.render());
     }
 
-    public static Result getInfoValue(Long id) {
-        ObjectNode result = Json.newObject();
-        Info info = Info.find.byId(id);
+    public static Result getInfo(Long id) {
+       /* Info info = Info.find.byId(id);
         if (info != null) {
-            result.put("value", info.getValue());
-            return ok(result);
+            return ok(Json.toJson(info));
         } else {
             return badRequest();
-        }
+        }*/
+        return TODO;
     }
 
     public static Result switchValue(Long id) {
-        Switch sw = Switch.find.byId(id);
+      /*  Switch sw = Switch.find.byId(id);
         if (sw != null) {
-            sw.setValue(!sw.getValue());
+           // sw.setValue(!sw.getValue());
             return ok(Boolean.toString(sw.getValue()));
         } else {
             return badRequest();
-        }
+        }*/
+        return TODO;
+    }
+
+    public static Result getSlider(Long id) {
+        /*Slider slider = Slider.find.byId(id);
+        if (slider != null) {
+            return ok(Json.toJson(slider));
+        } else {
+            return badRequest();
+        }*/
+        return TODO;
+    }
+
+    public static Result setSliderValue(Long id, int value) {
+       /* Slider slider = Slider.find.byId(id);
+        if (slider != null) {
+            if (value >= 0 && value < 1024) {
+                slider.setValue(value);
+                return ok(Json.toJson(slider));
+            } else {
+                return badRequest();
+            }
+        } else {
+            return badRequest();
+        }*/
+        return TODO;
     }
 
 }

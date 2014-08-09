@@ -5,6 +5,7 @@
         <li class="active">@Messages("home.title")</li>
     </ol>
     <script src="@routes.Assets.at("js/home.js")"></script>
+    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
     <div class="row">
         <div class="col-md-8">
@@ -20,7 +21,7 @@
                     @for(switch <- group.switches.sortBy(_.name)) {
                         <li class="list-group-item">
                             @switch.name:
-                            @if(switch.getValue()) {
+                            @if(switch.value) {
                                 <span name="switch@switch.id" class="label label-success">@Messages("home.on")</span>
                                 <div class="pull-right">
                                     <button name="switchBtn@switch.id" class="label label-info" onclick="switchValue(@switch.id)">@Messages("home.turnoff")</button>
@@ -32,17 +33,19 @@
                                 </div>
 
                             }
-
                         </li>
                     }
 
                     @for(info <- group.infos.sortBy(_.name)) {
                         <input type="hidden" name="info" value="@info.id"/>
-                        <li class="list-group-item">@{info.name}: <span name="@info.id">@info.getValue()</span> @info.signature</li>
+                        <li class="list-group-item">@{info.name}: <span name="@info.id">@info.value</span> @info.signature</li>
                     }
 
                     @for(slider <- group.sliders.sortBy(_.name)) {
-                        <li class="list-group-item">@slider.name</li>
+                        <li class="list-group-item">
+                            <input type="hidden" name="slider" value="@slider.id">
+                            @slider.name <div name="slider@slider.id"></div>
+                        </li>
                     }
                 }
             </ul>
