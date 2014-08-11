@@ -48,9 +48,23 @@ public class DeviceManagerActor extends UntypedActor {
                 result.onRedeem(response -> {
                     Logger.info(response.getBody().toString());
                 });
-            } else
-                unhandled(message);
-        }
+            }
+        } else if (message instanceof ChangeDeviceValue) {
+            Device device = ((ChangeDeviceValue) message).device;
+
+            if (device instanceof Switch) {
+                Switch sw = (Switch)device;
+                String value = sw.value?Application.DIGITAL_HIGH:Application.DIGITAL_LOW;
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + sw.pinNumber + "/" + value).get();
+                Application.taskManager.tell(new DeviceValueChangedMessage(sw), getSelf());
+            } else if (device instanceof Slider) {
+                Slider slider = (Slider)device;
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/"+ slider.pinNumber + "/" + slider.value).get();
+                Application.taskManager.tell(new DeviceValueChangedMessage(slider), getSelf());
+            }
+
+        } else
+            unhandled(message);
     }
 
 }

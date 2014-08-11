@@ -13,4 +13,13 @@ public abstract class DeviceManagerProtocol {
         }
 
     }
+
+    public static class ChangeDeviceValue {
+
+        public final Device device;
+
+        public ChangeDeviceValue(Device device) {
+            this.device = device;
+        }
+    }
 }

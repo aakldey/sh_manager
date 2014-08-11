@@ -1,7 +1,10 @@
 package controllers;
 
+import actors.DeviceManagerProtocol;
+import actors.DeviceManagerProtocol.*;
 import akka.actor.ActorRef;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -38,49 +41,58 @@ public class Application extends Controller {
     }
 
     public static Result getInfo(Long id) {
-       /* Info info = Info.find.byId(id);
+        Info info = Info.find.byId(id);
         if (info != null) {
             return ok(Json.toJson(info));
         } else {
             return badRequest();
-        }*/
-        return TODO;
+        }
+        //return TODO;
     }
 
     public static Result switchValue(Long id) {
-      /*  Switch sw = Switch.find.byId(id);
+        Switch sw = Switch.find.byId(id);
         if (sw != null) {
-           // sw.setValue(!sw.getValue());
-            return ok(Boolean.toString(sw.getValue()));
+            sw.value = !sw.value;
+            deviceManager.tell(new ChangeDeviceValue(sw), ActorRef.noSender());
+            return ok();
         } else {
             return badRequest();
-        }*/
-        return TODO;
+        }
     }
 
     public static Result getSlider(Long id) {
-        /*Slider slider = Slider.find.byId(id);
+        Slider slider = Slider.find.byId(id);
         if (slider != null) {
             return ok(Json.toJson(slider));
         } else {
             return badRequest();
-        }*/
-        return TODO;
+        }
+    }
+
+    public static Result getSwitch(Long id) {
+        Switch sw = Switch.find.byId(id);
+        if (sw != null) {
+            return ok(Json.toJson(sw));
+        } else {
+            return badRequest();
+        }
     }
 
     public static Result setSliderValue(Long id, int value) {
-       /* Slider slider = Slider.find.byId(id);
+        Slider slider = Slider.find.byId(id);
         if (slider != null) {
             if (value >= 0 && value < 1024) {
-                slider.setValue(value);
-                return ok(Json.toJson(slider));
+                slider.value = value;
+                Logger.info(value + "");
+                deviceManager.tell(new ChangeDeviceValue(slider), ActorRef.noSender());
+                return ok();
             } else {
                 return badRequest();
             }
         } else {
             return badRequest();
-        }*/
-        return TODO;
+        }
     }
 
 }

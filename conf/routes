@@ -3,14 +3,15 @@
 # ~~~~
 
 # Home page
-GET        /                      controllers.Application.index()
-GET        /tasks                 controllers.Application.tasks()
-GET        /config                controllers.Application.config()
+GET        /                             controllers.Application.index()
+GET        /tasks                        controllers.Application.tasks()
+GET        /config                       controllers.Application.config()
 
-GET        /api/info/:id          controllers.Application.getInfo(id: Long)
-GET        /api/switch/:id        controllers.Application.switchValue(id: Long)
-GET        /api/slider/:id        controllers.Application.getSlider(id: Long)
-GET        /api/slider/:id/:value controllers.Application.setSliderValue(id: Long, value: Int)
+GET        /api/info/:id                 controllers.Application.getInfo(id: Long)
+GET        /api/switch/:id/switch        controllers.Application.switchValue(id: Long)
+GET        /api/switch/:id               controllers.Application.getSwitch(id: Long)
+GET        /api/slider/:id               controllers.Application.getSlider(id: Long)
+GET        /api/slider/:id/:value        controllers.Application.setSliderValue(id: Long, value: Int)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file          controllers.Assets.at(path="/public", file)
+GET        /assets/*file                 controllers.Assets.at(path="/public", file)

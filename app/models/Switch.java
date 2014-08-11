@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.Application;
 import play.Logger;
@@ -20,6 +21,7 @@ public class Switch extends Model implements Device {
 
     public int pinNumber;
 
+    @JsonIgnore
     @ManyToOne
     public DeviceGroup deviceGroup;
 

@@ -5,7 +5,7 @@
         <li class="active">@Messages("home.title")</li>
     </ol>
     <script src="@routes.Assets.at("js/home.js")"></script>
-    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script src="@routes.Assets.at("js/bootstrap-slider.js")"></script>
 
     <div class="row">
         <div class="col-md-8">
@@ -20,6 +20,7 @@
                 }
                     @for(switch <- group.switches.sortBy(_.name)) {
                         <li class="list-group-item">
+                            <input type="hidden" name="switch" value="@switch.id"/>
                             @switch.name:
                             @if(switch.value) {
                                 <span name="switch@switch.id" class="label label-success">@Messages("home.on")</span>
