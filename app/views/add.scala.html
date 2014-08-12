@@ -1,0 +1,29 @@
+@(deviceType: String, groups: List[DeviceGroup])
+
+@main(Messages("config.add")) {
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.index()">@Messages("home.title")</a></li>
+        <li><a href="@routes.Application.config()">@Messages("config.title")</a></li>
+        <li class="active">@Messages("config.add")</li>
+    </ol>
+
+    <div class="row">
+        <div class="panel-default">
+            <div class="panel-body">
+                @if(deviceType.equals(Application.DEVICE_TYPE_SWITCH)) {
+                    <form method="post" action="@routes.Application.addSwitch()">
+                        <input type="text" name="name" class="form-control" placeholder="@Messages("config.name")">
+                        <select name="group" class="form-control">
+                            @for(group <- groups) {
+                                <option value="@group.id">@group.name</option>
+                            }
+                        </select>
+                        <input type="text" name="pinNumber" class="form-control" placeholder="@Messages("config.pinNumber")">
+                        <input type="submit" value="@Messages("config.add")">
+                    </form>
+                }
+            </div>
+        </div>
+
+    </div>
+}

@@ -26,6 +26,9 @@ public class UpdateManagerActor extends UntypedActor {
             Logger.info("subscribe new device for updates");
             Device device = ((SubscribeDeviceMessage) message).device;
             devices.add(device);
+        } else if (message instanceof UnsubscribeDeviceMessage) {
+            Device device = ((UnsubscribeDeviceMessage) message).device;
+            devices.remove(device);
         }
     }
 }

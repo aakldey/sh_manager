@@ -1,4 +1,190 @@
+@(devices: List[Device], groups: List[DeviceGroup])
 @main(Messages("config.title")) {
-    Here will be configurations
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.index()">@Messages("home.title")</a></li>
+        <li class="active">@Messages("config.title")</li>
+    </ol>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#devices" role="tab" data-toggle="tab">@Messages("config.devices")</a></li>
+        <li><a href="#groups" role="tab" data-toggle="tab">@Messages("config.groups")</a></li>
+        <li><a href="#hardware" role="tab" data-toggle="tab">@Messages("config.hardware")</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="devices">
+            <div class="panel-default">
+                <div class="panel-body">
+                    <input type="hidden" name="deleteMessage" value="@Messages("config.delete.confirm")">
+                    <table class="table">
+                        <tr class="info">
+                            <td colspan="5">@Messages("config.switch")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>@Messages("config.name")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.group")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.pinNumber")</b>
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+                        @for(device <- devices.filter(_.isInstanceOf[Switch])) {
+                            <form method="post" action="@routes.Application.updateSwitch(device.asInstanceOf[Switch].id)">
+                               <tr>
+                                    <td><input type="text" name="name" class="form-control" value="@device.asInstanceOf[Switch].name"/></td>
+                                    <td>
+                                        <select name="group" class="form-control">
+                                            @for(group <- groups) {
+                                                <option value="@group.id" @if(device.asInstanceOf[Switch].deviceGroup.id == group.id) {selected="true"}>@group.name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="pinNumber" value="@device.asInstanceOf[Switch].pinNumber" class="form-control">
+                                    </td>
+                                    <td class="col-md-2">
+                                        <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
+                                        <button href="@routes.Application.deleteSwitch(device.asInstanceOf[Switch].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</button>
+                                    </td>
+                               </tr>
+                            </form>
+                        }
+                    </table>
+                    <table class="table">
+                        <tr class="info">
+                            <td colspan="5">@Messages("config.info")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>@Messages("config.name")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.info.sign")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.group")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.pinNumber")</b>
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+                        @for(device <- devices.filter(_.isInstanceOf[Info])) {
+                            <form method="post" action="@routes.Application.updateInfo(device.asInstanceOf[Info].id)">
+                                <tr>
+                                    <td><input type="text" name="name" class="form-control" value="@device.asInstanceOf[Info].name"/></td>
+                                    <td><input type="text" name="sign" class="form-control" value="@device.asInstanceOf[Info].signature"></td>
+                                    <td>
+                                        <select name="group" class="form-control">
+                                        @for(group <- groups) {
+                                            <option value="@group.id" @if(device.asInstanceOf[Info].deviceGroup.id == group.id) {selected="true"}>@group.name</option>
+                                        }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="pinNumber" value="@device.asInstanceOf[Info].pinNumber" class="form-control">
+                                    </td>
+                                    <td class="col-md-2">
+                                        <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
+                                        <button href="@routes.Application.deleteSwitch(device.asInstanceOf[Info].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</button>
+                                    </td>
+                                </tr>
+                            </form>
+                        }
+                    </table>
+                    <table class="table">
+                        <tr class="info">
+                            <td colspan="5">@Messages("config.slider")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>@Messages("config.name")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.slider.range")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.group")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.pinNumber")</b>
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+                        @for(device <- devices.filter(_.isInstanceOf[Slider])) {
+                            <form method="post" action="@routes.Application.updateSlider(device.asInstanceOf[Slider].id)">
+                                <tr>
+                                    <td><input type="text" name="name" class="form-control" value="@device.asInstanceOf[Slider].name"/></td>
+                                    <td class="form-inline">
+                                        <input type="text" name="rangeStart" class="form-control" value="@device.asInstanceOf[Slider].rangeStart">
+                                        <input type="text" name="rangeEnd" class="form-control" value="@device.asInstanceOf[Slider].rangeEnd">
+                                    </td>
+                                    <td>
+                                        <select name="group" class="form-control">
+                                        @for(group <- groups) {
+                                            <option value="@group.id" @if(device.asInstanceOf[Slider].deviceGroup.id == group.id) {selected="true"}>@group.name</option>
+                                        }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="pinNumber" value="@device.asInstanceOf[Slider].pinNumber" class="form-control">
+                                    </td>
+                                    <td class="col-md-2">
+                                        <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
+                                        <button href="@routes.Application.deleteSwitch(device.asInstanceOf[Slider].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</button>
+                                    </td>
+                                </tr>
+                            </form>
+                        }
+                    </table>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                        @Messages("config.add")
+                    </button>
+
+                        <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <form method="post" action="@routes.Application.addDevice()">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">@Messages("config.add.type")</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                            <select class="form-control" name="type">
+                                                <option value="switch">@Messages("config.add.switch")</option>
+                                                <option value="info">@Messages("config.add.info")</option>
+                                                <option value="slider">@Messages("config.add.slider")</option>
+                                            </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">@Messages("config.add.cancel")</button>
+                                        <input type="submit" class="btn btn-primary" value="@Messages("config.add.next")">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="groups">
+
+        </div>
+        <div class="tab-pane" id="hardware">
+
+        </div>
+    </div>
 
 }
