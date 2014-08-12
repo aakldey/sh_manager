@@ -8,22 +8,30 @@
     </ol>
 
     <div class="row">
-        <div class="panel-default">
-            <div class="panel-body">
-                @if(deviceType.equals(Application.DEVICE_TYPE_SWITCH)) {
-                    <form method="post" action="@routes.Application.addSwitch()">
-                        <input type="text" name="name" class="form-control" placeholder="@Messages("config.name")">
-                        <select name="group" class="form-control">
-                            @for(group <- groups) {
-                                <option value="@group.id">@group.name</option>
-                            }
-                        </select>
-                        <input type="text" name="pinNumber" class="form-control" placeholder="@Messages("config.pinNumber")">
-                        <input type="submit" value="@Messages("config.add")">
-                    </form>
-                }
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title">@Messages("config.add.switch")</h5>
+                </div>
+                <div class="panel-body">
+                    @if(deviceType.equals(Application.DEVICE_TYPE_SWITCH)) {
+                        <form method="post" action="@routes.Application.doAddDevice(deviceType)">
+                            <input type="text" name="name" class="form-control" placeholder="@Messages("config.name")"><br>
+                            <label for="group">@Messages("config.group"):</label>
+                                <select name="group" id="group" class="form-control">
+                                    @for(group <- groups) {
+                                        <option value="@group.id">@group.name</option>
+                                    }
+                                </select><br>
+                            <input type="text" name="pinNumber" class="form-control" placeholder="@Messages("config.pinNumber")"><br>
+                            <input type="submit" class="btn btn-primary form-control" value="@Messages("config.add")">
+                        </form>
+                    }
+                </div>
             </div>
         </div>
+        <div class="col-md-4"></div>
 
     </div>
 }

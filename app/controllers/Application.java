@@ -231,8 +231,64 @@ public class Application extends Controller {
         }
     }
 
-    public static Result addSwitch() {
-        return TODO;
+    public static Result doAddDevice(String type) {
+        try {
+            DynamicForm form = Form.form().bindFromRequest();
+            String name = form.get("name");
+            Long groupId = Long.parseLong(form.get("group"));
+            int pinNumber = Integer.parseInt(form.get("pinNumber"));
+
+            DeviceGroup group = DeviceGroup.find.byId(groupId);
+
+            if (group == null) {
+                flash(Application.FLASH_ERROR_KEY, Messages.get("config.error"));
+                return badRequest(add.render(type, DeviceGroup.find.all()));
+            }
+
+            if (type.equals(Application.DEVICE_TYPE_SWITCH)) {
+                Switch sw = new Switch(pinNumber, name);
+                sw.deviceGroup = group;
+                sw.save();
+                updateManager.tell(new SubscribeDeviceMessage(sw), ActorRef.noSender());
+
+                flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.added", sw.name));
+                return redirect(routes.Application.config());
+            } else if (type.equals(Application.DEVICE_TYPE_INFO)) {
+                String sign = form.get("sign");
+
+                Info info = new Info(pinNumber, name);
+                info.deviceGroup = group;
+                info.signature = sign;
+
+                updateManager.tell(new SubscribeDeviceMessage(info), ActorRef.noSender());
+
+                flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.added", info.name));
+                return redirect(routes.Application.config());
+            } else if (type.equals(Application.DEVICE_TYPE_SLIDER)) {
+                int rangeStart = Integer.parseInt(form.get("rangeStart"));
+                int rangeEnd = Integer.parseInt(form.get("rangeEnd"));
+
+                if (rangeEnd > 1023 || rangeStart < 0 || rangeEnd < rangeStart) {
+                    flash(Application.FLASH_ERROR_KEY, Messages.get("config.error.range"));
+                    return badRequest(add.render(type, DeviceGroup.find.all()));
+                }
+
+                Slider slider = new Slider(pinNumber, name);
+                slider.rangeStart = rangeStart;
+                slider.rangeEnd = rangeEnd;
+                slider.deviceGroup = group;
+
+                flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.added", slider.name));
+                return redirect(routes.Application.config());
+            } else {
+                flash(Application.FLASH_ERROR_KEY, Messages.get("config.error"));
+                return badRequest(add.render(type, DeviceGroup.find.all()));
+            }
+
+        } catch (Exception e) {
+            flash(Application.FLASH_ERROR_KEY, Messages.get("config.error"));
+            return badRequest(add.render(type, DeviceGroup.find.all()));
+        }
     }
 
     public static Result addInfo(){

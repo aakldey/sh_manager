@@ -15,9 +15,9 @@
             <input type="hidden" name="off" value="@Messages("home.off")">
             <ul class="list-group">
                 @for(group <- groups.sortBy(_.name)) {
-                @if(group.switches.size() != 0 || group.sliders.size() != 0 || group.infos.size() != 0) {
-                    <li class="list-group-item disabled">@group.name</li>
-                }
+                    @if(group.switches.size() != 0 || group.sliders.size() != 0 || group.infos.size() != 0) {
+                        <li class="list-group-item disabled">@group.name</li>
+                    }
                     @for(switch <- group.switches.sortBy(_.name)) {
                         <li class="list-group-item">
                             <input type="hidden" name="switch" value="@switch.id"/>
@@ -48,10 +48,12 @@
                             @slider.name <div name="slider@slider.id"></div>
                         </li>
                     }
+                    <br>
                 }
             </ul>
         </div>
         <div class="col-md-4">
+            <br>
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h5 align="center">@Messages("home.time.today") <i><span name="today"></span></i></h5>

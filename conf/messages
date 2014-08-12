@@ -33,5 +33,6 @@ config.error.nosuchdevice = Error, there is no device with id {}
 config.error = Error, input correct values
 config.error.range = Error, range values must be in 0 .. 1023
 config.updated = Device "{0}" has updated
+config.added = Device "{0}" succesfully added
 config.removed = Device has removed
 config.delete.confirm = This device will be deleted. Are you sure?

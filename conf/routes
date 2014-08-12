@@ -13,7 +13,7 @@ GET         /config/switch/delete/:id        controllers.Application.deleteSwitc
 GET         /config/info/delete/:id          controllers.Application.deleteInfo(id: Long)
 GET         /config/slider/delete/:id        controllers.Application.deleteSlider(id: Long)
 POST        /config/add                      controllers.Application.addDevice()
-POST        /config/add/switch               controllers.Application.addSwitch()
+POST        /config/add/device               controllers.Application.doAddDevice(type: String)
 POST        /config/add/info                 controllers.Application.addInfo()
 POST        /config/add/slider               controllers.Application.addSlider()
 

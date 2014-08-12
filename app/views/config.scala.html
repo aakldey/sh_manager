@@ -51,7 +51,7 @@
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <button href="@routes.Application.deleteSwitch(device.asInstanceOf[Switch].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</button>
+                                        <a href="@routes.Application.deleteSwitch(device.asInstanceOf[Switch].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                </tr>
                             </form>
@@ -95,7 +95,7 @@
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <button href="@routes.Application.deleteSwitch(device.asInstanceOf[Info].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</button>
+                                        <a href="@routes.Application.deleteSwitch(device.asInstanceOf[Info].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                 </tr>
                             </form>
@@ -142,7 +142,7 @@
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <button href="@routes.Application.deleteSwitch(device.asInstanceOf[Slider].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</button>
+                                        <a href="@routes.Application.deleteSwitch(device.asInstanceOf[Slider].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                 </tr>
                             </form>
