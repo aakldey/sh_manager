@@ -32,5 +32,9 @@ public class DeviceGroup extends Model {
         this.save();
     }
 
+    public int getDeviceCount() {
+        return switches.size() + infos.size() + sliders.size();
+    }
+
     public static Finder<Long, DeviceGroup> find = new Finder<Long, DeviceGroup>(Long.class, DeviceGroup.class);
 }

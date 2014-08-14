@@ -40,6 +40,10 @@ public class Application extends Controller {
     public static String DEVICE_TYPE_INFO = "info";
     public static String DEVICE_TYPE_SLIDER = "slider";
 
+    public static String ACTIVE_TAB_DEVICES = "devices";
+    public static String ACTIVE_TAB_GROUPS = "groups";
+    public static String ACTIVE_TAB_SETUP = "setup";
+
     public static DeviceGroup DEFAULT_DEVICE_GROUP = DeviceGroup.find.where().eq("name", DeviceGroup.DEFAULT_GROUP_NAME).findUnique();
 
     public static Result index() {
@@ -55,7 +59,7 @@ public class Application extends Controller {
         list.addAll(Switch.find.all());
         list.addAll(Info.find.all());
         list.addAll(Slider.find.all());
-        return ok(config.render(list, DeviceGroup.find.all()));
+        return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_DEVICES));
     }
 
     public static Result updateSwitch(Long id) {
@@ -67,12 +71,18 @@ public class Application extends Controller {
                 Long groupId = Long.parseLong(form.get("group"));
                 int pinNumber = Integer.parseInt(form.get("pinNumber"));
 
+                if (name.equals("")) {
+                    flash(FLASH_ERROR_KEY, Messages.get("config.error"));
+                    return redirect(routes.Application.config());
+                }
+
                 DeviceGroup group = DeviceGroup.find.byId(groupId);
 
                 if (group == null) {
                     flash(Application.FLASH_ERROR_KEY, Messages.get("config.error"));
                     return redirect(routes.Application.config());
                 }
+
                 updateManager.tell(new UnsubscribeDeviceMessage(sw), ActorRef.noSender());
                 sw.name = name;
                 sw.deviceGroup = group;
@@ -102,6 +112,11 @@ public class Application extends Controller {
                 String sign = form.get("sign");
                 Long groupId = Long.parseLong(form.get("group"));
                 int pinNumber = Integer.parseInt(form.get("pinNumber"));
+
+                if (name.equals("")) {
+                    flash(FLASH_ERROR_KEY, Messages.get("config.error"));
+                    return redirect(routes.Application.config());
+                }
 
                 DeviceGroup group = DeviceGroup.find.byId(groupId);
 
@@ -137,6 +152,13 @@ public class Application extends Controller {
             Slider slider = Slider.find.byId(id);
             if (slider != null) {
                 String name = form.get("name");
+
+                if (name.equals("")) {
+                    flash(FLASH_ERROR_KEY, Messages.get("config.error"));
+                    return redirect(routes.Application.config());
+                }
+
+
                 int rangeStart = Integer.parseInt(form.get("rangeStart"));
                 int rangeEnd = Integer.parseInt(form.get("rangeEnd"));
 
@@ -238,6 +260,11 @@ public class Application extends Controller {
             Long groupId = Long.parseLong(form.get("group"));
             int pinNumber = Integer.parseInt(form.get("pinNumber"));
 
+            if (name.equals("")) {
+                flash(FLASH_ERROR_KEY, Messages.get("config.error"));
+                return badRequest(add.render(type, DeviceGroup.find.all()));
+            }
+
             DeviceGroup group = DeviceGroup.find.byId(groupId);
 
             if (group == null) {
@@ -277,6 +304,8 @@ public class Application extends Controller {
                 slider.rangeStart = rangeStart;
                 slider.rangeEnd = rangeEnd;
                 slider.deviceGroup = group;
+                slider.save();
+                updateManager.tell(new SubscribeDeviceMessage(slider), ActorRef.noSender());
 
                 flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.added", slider.name));
                 return redirect(routes.Application.config());
@@ -288,6 +317,100 @@ public class Application extends Controller {
         } catch (Exception e) {
             flash(Application.FLASH_ERROR_KEY, Messages.get("config.error"));
             return badRequest(add.render(type, DeviceGroup.find.all()));
+        }
+    }
+
+    public static Result updateGroup(Long id) {
+        List<Device> list = new ArrayList();
+        list.addAll(Switch.find.all());
+        list.addAll(Info.find.all());
+        list.addAll(Slider.find.all());
+
+        DynamicForm form = Form.form().bindFromRequest();
+        String name = form.get("name");
+
+        if (name.equals("")) {
+            flash(FLASH_ERROR_KEY, Messages.get("config.error"));
+            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        }
+
+        DeviceGroup group = DeviceGroup.find.byId(id);
+
+        if (group != null) {
+            group.name = name;
+            group.save();
+
+            flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.groups.updated"));
+            return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        } else {
+            flash(Application.FLASH_ERROR_KEY, Messages.get("config.error.nosuchgroup"));
+            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        }
+    }
+
+    public static Result deleteGroup(Long id) {
+        List<Device> list = new ArrayList();
+        list.addAll(Switch.find.all());
+        list.addAll(Info.find.all());
+        list.addAll(Slider.find.all());
+
+        DeviceGroup group = DeviceGroup.find.byId(id);
+
+        if (group != null) {
+            group.switches.forEach(device -> {
+                updateManager.tell(new UnsubscribeDeviceMessage(device), ActorRef.noSender());
+                device.deviceGroup = DEFAULT_DEVICE_GROUP;
+                device.save();
+                updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
+            });
+
+            group.infos.forEach(device -> {
+                updateManager.tell(new UnsubscribeDeviceMessage(device), ActorRef.noSender());
+                device.deviceGroup = DEFAULT_DEVICE_GROUP;
+                device.save();
+                updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
+            });
+
+            group.sliders.forEach(device -> {
+                updateManager.tell(new UnsubscribeDeviceMessage(device), ActorRef.noSender());
+                device.deviceGroup = DEFAULT_DEVICE_GROUP;
+                device.save();
+                updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
+            });
+
+            group.delete();
+
+            flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.groups.removed"));
+            return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        } else {
+            flash(Application.FLASH_ERROR_KEY, Messages.get("config.error.nosuchgroup"));
+            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        }
+    }
+
+    public static Result addGroup() {
+        List<Device> list = new ArrayList();
+        list.addAll(Switch.find.all());
+        list.addAll(Info.find.all());
+        list.addAll(Slider.find.all());
+
+        DynamicForm form = Form.form().bindFromRequest();
+
+        String name = form.get("name");
+
+        if (name.equals("")) {
+            flash(FLASH_ERROR_KEY, Messages.get("config.error"));
+            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        }
+
+        if(DeviceGroup.find.where().eq("name", name).findList().size() == 0) {
+            DeviceGroup group = new DeviceGroup(name);
+
+            flash(FLASH_MESSAGE_KEY, Messages.get("config.groups.added"));
+            return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+        } else {
+            flash(FLASH_ERROR_KEY, Messages.get("config.groups.error.exist"));
+            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         }
     }
 

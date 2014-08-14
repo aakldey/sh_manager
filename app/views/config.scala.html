@@ -1,4 +1,4 @@
-@(devices: List[Device], groups: List[DeviceGroup])
+@(devices: List[Device], groups: List[DeviceGroup], activeTab: String)
 @main(Messages("config.title")) {
     <ol class="breadcrumb">
         <li><a href="@routes.Application.index()">@Messages("home.title")</a></li>
@@ -6,20 +6,20 @@
     </ol>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li class="active"><a href="#devices" role="tab" data-toggle="tab">@Messages("config.devices")</a></li>
-        <li><a href="#groups" role="tab" data-toggle="tab">@Messages("config.groups")</a></li>
-        <li><a href="#hardware" role="tab" data-toggle="tab">@Messages("config.hardware")</a></li>
+        <li @if(activeTab == Application.ACTIVE_TAB_DEVICES) {class="active"}><a href="#devices" role="tab" data-toggle="tab">@Messages("config.devices")</a></li>
+        <li @if(activeTab == Application.ACTIVE_TAB_GROUPS) {class="active"}><a href="#groups" role="tab" data-toggle="tab">@Messages("config.groups")</a></li>
+        <li @if(activeTab == Application.ACTIVE_TAB_SETUP) {class="active"}><a href="#hardware" role="tab" data-toggle="tab">@Messages("config.hardware")</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane active" id="devices">
-            <div class="panel-default">
+        <div class="tab-pane @if(activeTab == Application.ACTIVE_TAB_DEVICES) {active}" id="devices">
+            <div class="panel-default panel">
                 <div class="panel-body">
                     <input type="hidden" name="deleteMessage" value="@Messages("config.delete.confirm")">
                     <table class="table">
-                        <tr class="info">
-                            <td colspan="5">@Messages("config.switch")</td>
+                        <tr class="warning">
+                            <td colspan="5" align="center">@Messages("config.switch")</td>
                         </tr>
                         <tr>
                             <td>
@@ -59,7 +59,7 @@
                     </table>
                     <table class="table">
                         <tr class="info">
-                            <td colspan="5">@Messages("config.info")</td>
+                            <td colspan="5" align="center">@Messages("config.info")</td>
                         </tr>
                         <tr>
                             <td>
@@ -95,15 +95,15 @@
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <a href="@routes.Application.deleteSwitch(device.asInstanceOf[Info].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
+                                        <a href="@routes.Application.deleteInfo(device.asInstanceOf[Info].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                 </tr>
                             </form>
                         }
                     </table>
                     <table class="table">
-                        <tr class="info">
-                            <td colspan="5">@Messages("config.slider")</td>
+                        <tr class="success">
+                            <td colspan="5" align="center">@Messages("config.slider")</td>
                         </tr>
                         <tr>
                             <td>
@@ -179,10 +179,55 @@
                 </div>
             </div>
         </div>
-        <div class="tab-pane" id="groups">
+        <div class="tab-pane @if(activeTab == Application.ACTIVE_TAB_GROUPS) {active}" id="groups">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                               <b>@Messages("config.groups.name")</b>
+                            </td>
+                            <td>
+                                <b>@Messages("config.groups.count")</b>
+                            </td>
+                            <td>
 
+                            </td>
+                        </tr>
+                        @for(group <- groups) {
+                            <form method="post" action="@routes.Application.updateGroup(group.id)">
+                                <tr>
+                                    <td>
+                                        @if(group.name == Application.DEFAULT_DEVICE_GROUP.name) {
+                                            @group.name
+                                        } else {
+                                            <input type="text" name="name" class="form-control" value="@group.name">
+                                        }
+                                    </td>
+                                    <td>
+                                        @group.getDeviceCount
+                                    </td>
+                                    <td class="col-md-2">
+                                        @if(group.name == Application.DEFAULT_DEVICE_GROUP.name) {
+                                            @Messages("config.groups.default")
+                                        } else {
+                                            <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
+                                            <a href="@routes.Application.deleteGroup(group.id)" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
+                                        }
+                                    </td>
+                                </tr>
+                            </form>
+                        }
+                    </table>
+
+                    <form method="post" action="@routes.Application.addGroup()" class="form-inline">
+                        <input type="text" name="name" class="form-control" placeholder="@Messages("config.name")">
+                        <input type="submit" value="@Messages("config.groups.add")" class="form-control btn btn-primary btn-sm">
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="tab-pane" id="hardware">
+        <div class="tab-pane @if(activeTab == Application.ACTIVE_TAB_SETUP) {active}" id="hardware">
 
         </div>
     </div>

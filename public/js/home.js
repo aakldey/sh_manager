@@ -9,19 +9,30 @@ $(document).ready(function() {
 
     $('input[name=slider]').each(function (index) {
         var id = $(this).val();
-        $('div[name=slider' + id +']').slider({value:100, tooltip: 'hide', max: 1023}).on('slideStop', function(evt) {
-            $.ajax({
-                type: 'GET',
-                url: 'api/slider/' + id + '/'+ $('div[name=slider' + id +']').slider('getValue').val(),
-                success: function(msg) {
+        $.ajax({
+            type: 'GET',
+            url: 'api/slider/' + id,
+            success: function(msg) {
+                $('div[name=slider' + id +']').slider({value:msg.value, tooltip: 'hide', min: msg.rangeStart, max: msg.rangeEnd}).on('slideStop', function(evt) {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'api/slider/' + id + '/'+ $('div[name=slider' + id +']').slider('getValue').val(),
+                        success: function(msg) {
+                            $('span[name=slider' + id + ']').html($('div[name=slider' + id +']').slider('getValue').val())
+                        },
+                        error: function(msg) {
+                            $('span[name=slider' + id + ']').html('null')
+                        }
 
-                },
-                error: function(msg) {
+                    });
+                });
+            },
+            error: function(msg) {
 
-                }
-
-            });
+            }
         });
+
+
         $.ajax({
             type: 'GET',
             url: 'api/slider/' + id,

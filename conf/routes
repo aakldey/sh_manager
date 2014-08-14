@@ -16,6 +16,9 @@ POST        /config/add                      controllers.Application.addDevice()
 POST        /config/add/device               controllers.Application.doAddDevice(type: String)
 POST        /config/add/info                 controllers.Application.addInfo()
 POST        /config/add/slider               controllers.Application.addSlider()
+POST        /config/group/:id                controllers.Application.updateGroup(id: Long)
+GET         /config/group/:id/delete         controllers.Application.deleteGroup(id: Long)
+POST        /config/group                    controllers.Application.addGroup()
 
 
 GET         /api/info/:id                    controllers.Application.getInfo(id: Long)

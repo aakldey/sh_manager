@@ -45,7 +45,8 @@
                     @for(slider <- group.sliders.sortBy(_.name)) {
                         <li class="list-group-item">
                             <input type="hidden" name="slider" value="@slider.id">
-                            @slider.name <div name="slider@slider.id"></div>
+
+                            @slider.name &nbsp;&nbsp;&nbsp;&nbsp;<div name="slider@slider.id"></div>&nbsp;&nbsp;<span name="slider@slider.id" class="label label-info">@slider.value</span>
                         </li>
                     }
                     <br>
