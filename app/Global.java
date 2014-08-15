@@ -1,7 +1,8 @@
 import actors.DeviceManagerActor;
 import actors.TaskManagerActor;
+import actors.TaskManagerProtocol;
+import actors.TaskManagerProtocol.*;
 import actors.UpdateManagerActor;
-import actors.UpdateManagerProtocol;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import com.avaje.ebean.Ebean;
@@ -49,6 +50,15 @@ public class Global extends GlobalSettings {
         devices.stream().forEach(device -> {
             updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
         });
+
+        Task task = new Task("task1");
+
+        TaskCondition cond = new TaskCondition(Info.find.where().eq("name", "Temperature").findUnique(),70, TaskCondition.ConditionType.GREATER);
+        task.conditions.add(cond);
+        TaskActionChange action = new TaskActionChange();
+        task.actions.add(action);
+
+        taskManager.tell(new SubscribeTaskMessage(task), ActorRef.noSender());
 
         Akka.system().scheduler().schedule(
                 Duration.create(0, TimeUnit.SECONDS),

@@ -1,13 +1,9 @@
 package controllers;
 
-import actors.DeviceManagerProtocol;
 import actors.DeviceManagerProtocol.*;
-import actors.TaskManagerProtocol;
 import actors.TaskManagerProtocol.*;
-import actors.UpdateManagerProtocol;
 import actors.UpdateManagerProtocol.*;
 import akka.actor.ActorRef;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -51,7 +47,7 @@ public class Application extends Controller {
     }
 
     public static Result tasks() {
-        return ok(tasks.render());
+        return ok(tasks.render(Task.find.all()));
     }
 
     public static Result config() {

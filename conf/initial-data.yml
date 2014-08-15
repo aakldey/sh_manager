@@ -7,21 +7,3 @@
 
 - &entrance !!models.DeviceGroup
     name:    Entrance
-
-- !!models.Switch
-    name:    Lamp 1
-    pinNumber:    1
-    deviceGroup:    *livingRoom
-
-- !!models.Info
-    name:    Temperature
-    pinNumber:    1
-    deviceGroup:    *livingRoom
-    signature:    °C
-
-- !!models.Slider
-    name:    Night Lamp
-    pinNumber:    3
-    deviceGroup:    *livingRoom
-    rangeStart:    0
-    rangeEnd:    100

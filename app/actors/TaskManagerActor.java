@@ -1,24 +1,55 @@
 package actors;
 
 import akka.actor.UntypedActor;
-import controllers.Application;
 import models.*;
-import actors.DeviceManagerProtocol.*;
 import actors.TaskManagerProtocol.*;
-
-import play.Logger;
-import play.libs.F.*;
-import play.libs.ws.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaskManagerActor extends UntypedActor {
 
+    public List<Task> tasks = new ArrayList<>();
+
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof DeviceValueChangedMessage) {
-            Logger.info("device value changed");
+            tasks.stream().filter(task -> {
+                if (task.conditions.stream().filter(condition -> {
+                    Device device = (Device)message;
+                    if (device.getClass().isInstance(device)) {
+                        if (device instanceof Switch) {
+                            if (((Switch)device).id == ((Switch)condition.device).id)
+                                return true;
+                            else
+                                return false;
+                        } else if (device instanceof Info) {
+                            if (((Info)device).id == ((Info)condition.device).id)
+                                return true;
+                            else
+                                return false;
+                        } else if (device instanceof Slider) {
+                            if (((Slider)device).id == ((Slider)condition.device).id)
+                                return true;
+                            else
+                                return false;
+                        } else
+                            return false;
+                    } else
+                        return false;
+
+                }).count() > 0)
+                    return true;
+                else
+                    return false;
+            }).forEach(task -> {
+                if (task.checkConditions())
+                    task.executeTask();
+            });
+        } else if (message instanceof SubscribeTaskMessage) {
+            tasks.add(((SubscribeTaskMessage) message).task);
+        } else if (message instanceof UnsubscribeTaskMessage) {
+            tasks.remove(((UnsubscribeTaskMessage) message).task);
         } else
             unhandled(message);
     }

@@ -1,4 +1,26 @@
+@(tasks: List[Task])
+
 @main(Messages("tasks.title")) {
-    Here will be tasks
+    <ol class="breadcrumb">
+        <li class="active"><a href="@routes.Application.index()">@Messages("home.title")</a></li>
+        <li>@Messages("tasks.title")</li>
+    </ol>
+    <script src="@routes.Assets.at("js/tasks.js")"></script>
+    <script src="@routes.Assets.at("js/bootstrap-slider.js")"></script>
+
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @if(tasks.size == 0) {
+                    @Messages("config.tasks.notasks");
+                } else {
+                    @for(task <- tasks) {
+                        @task.name
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
 
 }

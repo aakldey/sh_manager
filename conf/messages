@@ -47,3 +47,4 @@ config.groups.default = Default group
 config.groups.added = New group added
 config.groups.error.exist = Such group already exists
 config.groups.add = Add new group
+config.tasks.notasks = There is no tasks yet. Create some
