@@ -14,11 +14,11 @@ public class TaskManagerActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof DeviceValueChangedMessage) {
-            tasks.stream().filter(task -> {
+        /*    tasks.stream().filter(task -> {
                 if (task.conditions.stream().filter(condition -> {
                     Device device = (Device)message;
                     if (device.getClass().isInstance(device)) {
-                        if (device instanceof Switch) {
+                        if (device.deviceType == Device.DeviceType.SWITCH) {
                             if (((Switch)device).id == ((Switch)condition.device).id)
                                 return true;
                             else
@@ -45,7 +45,7 @@ public class TaskManagerActor extends UntypedActor {
             }).forEach(task -> {
                 if (task.checkConditions())
                     task.executeTask();
-            });
+            });*/
         } else if (message instanceof SubscribeTaskMessage) {
             tasks.add(((SubscribeTaskMessage) message).task);
         } else if (message instanceof UnsubscribeTaskMessage) {

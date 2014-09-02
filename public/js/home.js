@@ -128,7 +128,7 @@ function updateSwitches() {
             url: '/api/switch/'+id,
             success: function (msg) {
                // console.log(msg);
-                if (msg.value == true) {
+                if (msg.value > 0) {
 
                     $('span[name=switch' + id + ']').html(on);
                     $('span[name=switch' + id + ']').attr('class','label label-success');

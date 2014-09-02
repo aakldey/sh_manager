@@ -51,17 +51,13 @@ public class Application extends Controller {
     }
 
     public static Result config() {
-        List<Device> list = new ArrayList();
-        list.addAll(Switch.find.all());
-        list.addAll(Info.find.all());
-        list.addAll(Slider.find.all());
-        return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_DEVICES));
+        return ok(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_DEVICES));
     }
 
     public static Result updateSwitch(Long id) {
         try {
             DynamicForm form = Form.form().bindFromRequest();
-            Switch sw = Switch.find.byId(id);
+            Device sw = Device.find.byId(id);
             if (sw != null) {
                 String name = form.get("name");
                 Long groupId = Long.parseLong(form.get("group"));
@@ -102,7 +98,7 @@ public class Application extends Controller {
     public static Result updateInfo(Long id) {
         try {
             DynamicForm form = Form.form().bindFromRequest();
-            Info info = Info.find.byId(id);
+            Device info = Device.find.byId(id);
             if (info != null) {
                 String name = form.get("name");
                 String sign = form.get("sign");
@@ -145,7 +141,7 @@ public class Application extends Controller {
     public static Result updateSlider(Long id) {
         try {
             DynamicForm form = Form.form().bindFromRequest();
-            Slider slider = Slider.find.byId(id);
+            Device slider = Device.find.byId(id);
             if (slider != null) {
                 String name = form.get("name");
 
@@ -197,7 +193,7 @@ public class Application extends Controller {
     }
 
     public static Result deleteSwitch(Long id) {
-        Switch sw = Switch.find.byId(id);
+        Device sw = Device.find.byId(id);
         if (sw != null) {
             updateManager.tell(new UnsubscribeDeviceMessage(sw), ActorRef.noSender());
             sw.delete();
@@ -210,7 +206,7 @@ public class Application extends Controller {
     }
 
     public static Result deleteInfo(Long id) {
-        Info info = Info.find.byId(id);
+        Device info = Device.find.byId(id);
         if (info != null) {
             updateManager.tell(new UnsubscribeDeviceMessage(info), ActorRef.noSender());
             info.delete();
@@ -223,7 +219,7 @@ public class Application extends Controller {
     }
 
     public static Result deleteSlider(Long id) {
-        Slider slider = Slider.find.byId(id);
+        Device slider = Device.find.byId(id);
         if (slider != null) {
             updateManager.tell(new UnsubscribeDeviceMessage(slider), ActorRef.noSender());
             slider.delete();
@@ -269,7 +265,7 @@ public class Application extends Controller {
             }
 
             if (type.equals(Application.DEVICE_TYPE_SWITCH)) {
-                Switch sw = new Switch(pinNumber, name);
+                Device sw = new Device(name, pinNumber, 0, Device.DeviceType.SWITCH);
                 sw.deviceGroup = group;
                 sw.save();
                 updateManager.tell(new SubscribeDeviceMessage(sw), ActorRef.noSender());
@@ -279,9 +275,9 @@ public class Application extends Controller {
             } else if (type.equals(Application.DEVICE_TYPE_INFO)) {
                 String sign = form.get("sign");
 
-                Info info = new Info(pinNumber, name);
-                info.deviceGroup = group;
+                Device info = new Device(name, pinNumber, 0, Device.DeviceType.INFO);
                 info.signature = sign;
+                info.deviceGroup = group;
 
                 updateManager.tell(new SubscribeDeviceMessage(info), ActorRef.noSender());
 
@@ -296,7 +292,7 @@ public class Application extends Controller {
                     return badRequest(add.render(type, DeviceGroup.find.all()));
                 }
 
-                Slider slider = new Slider(pinNumber, name);
+                Device slider = new Device(name, pinNumber, 0, Device.DeviceType.SLIDER);
                 slider.rangeStart = rangeStart;
                 slider.rangeEnd = rangeEnd;
                 slider.deviceGroup = group;
@@ -317,17 +313,12 @@ public class Application extends Controller {
     }
 
     public static Result updateGroup(Long id) {
-        List<Device> list = new ArrayList();
-        list.addAll(Switch.find.all());
-        list.addAll(Info.find.all());
-        list.addAll(Slider.find.all());
-
         DynamicForm form = Form.form().bindFromRequest();
         String name = form.get("name");
 
         if (name.equals("")) {
             flash(FLASH_ERROR_KEY, Messages.get("config.error"));
-            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+            return badRequest(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         }
 
         DeviceGroup group = DeviceGroup.find.byId(id);
@@ -337,37 +328,20 @@ public class Application extends Controller {
             group.save();
 
             flash(Application.FLASH_MESSAGE_KEY, Messages.get("config.groups.updated"));
-            return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+            return ok(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         } else {
             flash(Application.FLASH_ERROR_KEY, Messages.get("config.error.nosuchgroup"));
-            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+            return badRequest(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         }
     }
 
     public static Result deleteGroup(Long id) {
         List<Device> list = new ArrayList();
-        list.addAll(Switch.find.all());
-        list.addAll(Info.find.all());
-        list.addAll(Slider.find.all());
 
         DeviceGroup group = DeviceGroup.find.byId(id);
 
         if (group != null) {
-            group.switches.forEach(device -> {
-                updateManager.tell(new UnsubscribeDeviceMessage(device), ActorRef.noSender());
-                device.deviceGroup = DEFAULT_DEVICE_GROUP;
-                device.save();
-                updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
-            });
-
-            group.infos.forEach(device -> {
-                updateManager.tell(new UnsubscribeDeviceMessage(device), ActorRef.noSender());
-                device.deviceGroup = DEFAULT_DEVICE_GROUP;
-                device.save();
-                updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
-            });
-
-            group.sliders.forEach(device -> {
+            group.devices.forEach(device -> {
                 updateManager.tell(new UnsubscribeDeviceMessage(device), ActorRef.noSender());
                 device.deviceGroup = DEFAULT_DEVICE_GROUP;
                 device.save();
@@ -385,10 +359,6 @@ public class Application extends Controller {
     }
 
     public static Result addGroup() {
-        List<Device> list = new ArrayList();
-        list.addAll(Switch.find.all());
-        list.addAll(Info.find.all());
-        list.addAll(Slider.find.all());
 
         DynamicForm form = Form.form().bindFromRequest();
 
@@ -396,17 +366,17 @@ public class Application extends Controller {
 
         if (name.equals("")) {
             flash(FLASH_ERROR_KEY, Messages.get("config.error"));
-            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+            return badRequest(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         }
 
         if(DeviceGroup.find.where().eq("name", name).findList().size() == 0) {
             DeviceGroup group = new DeviceGroup(name);
 
             flash(FLASH_MESSAGE_KEY, Messages.get("config.groups.added"));
-            return ok(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+            return ok(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         } else {
             flash(FLASH_ERROR_KEY, Messages.get("config.groups.error.exist"));
-            return badRequest(config.render(list, DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
+            return badRequest(config.render(Device.find.all(), DeviceGroup.find.all(), ACTIVE_TAB_GROUPS));
         }
     }
 
@@ -419,7 +389,7 @@ public class Application extends Controller {
     }
 
     public static Result getInfo(Long id) {
-        Info info = Info.find.byId(id);
+        Device info = Device.find.byId(id);
         if (info != null) {
             return ok(Json.toJson(info));
         } else {
@@ -429,9 +399,9 @@ public class Application extends Controller {
     }
 
     public static Result switchValue(Long id) {
-        Switch sw = Switch.find.byId(id);
+        Device sw = Device.find.byId(id);
         if (sw != null) {
-            sw.value = !sw.value;
+            sw.value = sw.value > 0 ? 0 : 1;
             deviceManager.tell(new ChangeDeviceValue(sw), ActorRef.noSender());
             return ok();
         } else {
@@ -440,7 +410,7 @@ public class Application extends Controller {
     }
 
     public static Result getSlider(Long id) {
-        Slider slider = Slider.find.byId(id);
+        Device slider = Device.find.byId(id);
         if (slider != null) {
             return ok(Json.toJson(slider));
         } else {
@@ -449,7 +419,7 @@ public class Application extends Controller {
     }
 
     public static Result getSwitch(Long id) {
-        Switch sw = Switch.find.byId(id);
+        Device sw = Device.find.byId(id);
         if (sw != null) {
             return ok(Json.toJson(sw));
         } else {
@@ -458,7 +428,7 @@ public class Application extends Controller {
     }
 
     public static Result setSliderValue(Long id, int value) {
-        Slider slider = Slider.find.byId(id);
+        Device slider = Device.find.byId(id);
         if (slider != null) {
             if (value >= 0 && value < 1024) {
                 slider.value = value;

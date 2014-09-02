@@ -8,7 +8,9 @@ import actors.TaskManagerProtocol.*;
 
 import play.Logger;
 import play.libs.F.*;
+import models.Device.*;
 import play.libs.ws.*;
+import scala.App;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,32 +21,30 @@ public class DeviceManagerActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         if (message instanceof AskUpdateMessage) {
             Device device = ((AskUpdateMessage) message).device;
-            if (device instanceof Switch) {
-                Switch sw = (Switch)device;
-                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + sw.pinNumber).get();
+            if (device.deviceType == DeviceType.SWITCH ) {
+
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + device.pinNumber).get();
                 result.onRedeem(response -> {
-                    boolean newValue = response.asJson().get(Integer.toString(sw.pinNumber)).asText().equals(Application.DIGITAL_HIGH)?true:false;
-                    if (sw.value != newValue) {
-                        sw.value = newValue;
-                        sw.save();
-                        Application.taskManager.tell(new DeviceValueChangedMessage(sw), getSelf());
+                    int newValue = response.asJson().get(Integer.toString(device.pinNumber)).asText().equals(Application.DIGITAL_HIGH)?1:0;
+                    if (device.value != newValue) {
+                        device.value = newValue;
+                        device.save();
+                        Application.taskManager.tell(new DeviceValueChangedMessage(device), getSelf());
                     }
                 });
-            } else if (device instanceof Info) {
-                Info info = (Info)device;
-                Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/" + info.pinNumber).get();
+            } else if (device.deviceType == DeviceType.INFO) {
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/" + device.pinNumber).get();
                 result.onRedeem(response -> {
-                    int newValue = response.asJson().get(Integer.toString(info.pinNumber)).asInt();
-                    if (info.value != newValue) {
-                        info.value = newValue;
-                        info.save();
-                        Application.taskManager.tell(new DeviceValueChangedMessage(info), getSelf());
+                    int newValue = response.asJson().get(Integer.toString(device.pinNumber)).asInt();
+                    if (device.value != newValue) {
+                        device.value = newValue;
+                        device.save();
+                        Application.taskManager.tell(new DeviceValueChangedMessage(device), getSelf());
                     }
 
                 });
-            } else if (device instanceof Slider) {
-                Slider sw = (Slider)device;
-                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + sw.pinNumber).get();
+            } else if (device.deviceType == DeviceType.SLIDER) {
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + device.pinNumber).get();
                 result.onRedeem(response -> {
                     Logger.info(response.getBody().toString());
                 });
@@ -52,15 +52,13 @@ public class DeviceManagerActor extends UntypedActor {
         } else if (message instanceof ChangeDeviceValue) {
             Device device = ((ChangeDeviceValue) message).device;
 
-            if (device instanceof Switch) {
-                Switch sw = (Switch)device;
-                String value = sw.value?Application.DIGITAL_HIGH:Application.DIGITAL_LOW;
-                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + sw.pinNumber + "/" + value).get();
-                Application.taskManager.tell(new DeviceValueChangedMessage(sw), getSelf());
-            } else if (device instanceof Slider) {
-                Slider slider = (Slider)device;
-                Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/"+ slider.pinNumber + "/" + slider.value).get();
-                Application.taskManager.tell(new DeviceValueChangedMessage(slider), getSelf());
+            if (device.deviceType == DeviceType.SWITCH) {
+                String value = device.value > 0?Application.DIGITAL_HIGH:Application.DIGITAL_LOW;
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/digital/" + device.pinNumber + "/" + value).get();
+                Application.taskManager.tell(new DeviceValueChangedMessage(device), getSelf());
+            } else if (device.deviceType == DeviceType.SLIDER) {
+                Promise<WSResponse> result = WS.url(Application.API_PATH + "/analog/"+ device.pinNumber + "/" + device.value).get();
+                Application.taskManager.tell(new DeviceValueChangedMessage(device), getSelf());
             }
 
         } else

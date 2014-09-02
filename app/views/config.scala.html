@@ -35,23 +35,23 @@
 
                             </td>
                         </tr>
-                        @for(device <- devices.filter(_.isInstanceOf[Switch])) {
-                            <form method="post" action="@routes.Application.updateSwitch(device.asInstanceOf[Switch].id)">
+                        @for(device <- devices.filter(_.deviceType == Device.DeviceType.SWITCH)) {
+                            <form method="post" action="@routes.Application.updateSwitch(device.id)">
                                <tr>
-                                    <td><input type="text" name="name" class="form-control" value="@device.asInstanceOf[Switch].name"/></td>
+                                    <td><input type="text" name="name" class="form-control" value="@device.name"/></td>
                                     <td>
                                         <select name="group" class="form-control">
                                             @for(group <- groups) {
-                                                <option value="@group.id" @if(device.asInstanceOf[Switch].deviceGroup.id == group.id) {selected="true"}>@group.name</option>
+                                                <option value="@group.id" @if(device.deviceGroup.id == group.id) {selected="true"}>@group.name</option>
                                             }
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="pinNumber" value="@device.asInstanceOf[Switch].pinNumber" class="form-control">
+                                        <input type="text" name="pinNumber" value="@device.pinNumber" class="form-control">
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <a href="@routes.Application.deleteSwitch(device.asInstanceOf[Switch].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
+                                        <a href="@routes.Application.deleteSwitch(device.id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                </tr>
                             </form>
@@ -78,24 +78,24 @@
 
                             </td>
                         </tr>
-                        @for(device <- devices.filter(_.isInstanceOf[Info])) {
-                            <form method="post" action="@routes.Application.updateInfo(device.asInstanceOf[Info].id)">
+                        @for(device <- devices.filter(_.deviceType == Device.DeviceType.INFO)) {
+                            <form method="post" action="@routes.Application.updateInfo(device.id)">
                                 <tr>
-                                    <td><input type="text" name="name" class="form-control" value="@device.asInstanceOf[Info].name"/></td>
-                                    <td><input type="text" name="sign" class="form-control" value="@device.asInstanceOf[Info].signature"></td>
+                                    <td><input type="text" name="name" class="form-control" value="@device.name"/></td>
+                                    <td><input type="text" name="sign" class="form-control" value="@device.signature"></td>
                                     <td>
                                         <select name="group" class="form-control">
                                         @for(group <- groups) {
-                                            <option value="@group.id" @if(device.asInstanceOf[Info].deviceGroup.id == group.id) {selected="true"}>@group.name</option>
+                                            <option value="@group.id" @if(device.deviceGroup.id == group.id) {selected="true"}>@group.name</option>
                                         }
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="pinNumber" value="@device.asInstanceOf[Info].pinNumber" class="form-control">
+                                        <input type="text" name="pinNumber" value="@device.pinNumber" class="form-control">
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <a href="@routes.Application.deleteInfo(device.asInstanceOf[Info].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
+                                        <a href="@routes.Application.deleteInfo(device.id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                 </tr>
                             </form>
@@ -122,27 +122,27 @@
 
                             </td>
                         </tr>
-                        @for(device <- devices.filter(_.isInstanceOf[Slider])) {
-                            <form method="post" action="@routes.Application.updateSlider(device.asInstanceOf[Slider].id)">
+                        @for(device <- devices.filter(_.deviceType == Device.DeviceType.SLIDER)) {
+                            <form method="post" action="@routes.Application.updateSlider(device.id)">
                                 <tr>
-                                    <td><input type="text" name="name" class="form-control" value="@device.asInstanceOf[Slider].name"/></td>
+                                    <td><input type="text" name="name" class="form-control" value="@device.name"/></td>
                                     <td class="form-inline">
-                                        <input type="text" name="rangeStart" class="form-control" value="@device.asInstanceOf[Slider].rangeStart">
-                                        <input type="text" name="rangeEnd" class="form-control" value="@device.asInstanceOf[Slider].rangeEnd">
+                                        <input type="text" name="rangeStart" class="form-control" value="@device.rangeStart">
+                                        <input type="text" name="rangeEnd" class="form-control" value="@device.rangeEnd">
                                     </td>
                                     <td>
                                         <select name="group" class="form-control">
                                         @for(group <- groups) {
-                                            <option value="@group.id" @if(device.asInstanceOf[Slider].deviceGroup.id == group.id) {selected="true"}>@group.name</option>
+                                            <option value="@group.id" @if(device.deviceGroup.id == group.id) {selected="true"}>@group.name</option>
                                         }
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="pinNumber" value="@device.asInstanceOf[Slider].pinNumber" class="form-control">
+                                        <input type="text" name="pinNumber" value="@device.pinNumber" class="form-control">
                                     </td>
                                     <td class="col-md-2">
                                         <input type="submit" class="btn btn-sm btn-primary" value="@Messages("config.update")">
-                                        <a href="@routes.Application.deleteSwitch(device.asInstanceOf[Slider].id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
+                                        <a href="@routes.Application.deleteSwitch(device.id)" onclick="return confirm($('input[name=deleteMessage]' ).val())" class="btn btn-sm btn-danger">@Messages("config.remove")</a>
                                     </td>
                                 </tr>
                             </form>

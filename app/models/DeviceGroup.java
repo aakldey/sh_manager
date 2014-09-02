@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,13 +20,7 @@ public class DeviceGroup extends Model {
     public String name;
 
     @OneToMany(mappedBy = "deviceGroup", cascade = CascadeType.ALL)
-    public List<Switch> switches;
-
-    @OneToMany(mappedBy = "deviceGroup", cascade = CascadeType.ALL)
-    public List<Info> infos;
-
-    @OneToMany(mappedBy = "deviceGroup", cascade = CascadeType.ALL)
-    public List<Slider> sliders;
+    public List<Device> devices = new ArrayList<Device>();
 
     public DeviceGroup(String name) {
         this.name = name;
@@ -33,7 +28,7 @@ public class DeviceGroup extends Model {
     }
 
     public int getDeviceCount() {
-        return switches.size() + infos.size() + sliders.size();
+        return devices.size();
     }
 
     public static Finder<Long, DeviceGroup> find = new Finder<Long, DeviceGroup>(Long.class, DeviceGroup.class);

@@ -3,7 +3,6 @@ package actors;
 import akka.actor.UntypedActor;
 import controllers.Application;
 import models.Device;
-import models.Info;
 import actors.UpdateManagerProtocol.*;
 import actors.DeviceManagerProtocol.*;
 import play.Logger;

@@ -15,41 +15,44 @@
             <input type="hidden" name="off" value="@Messages("home.off")">
             <ul class="list-group">
                 @for(group <- groups.sortBy(_.name)) {
-                    @if(group.switches.size() != 0 || group.sliders.size() != 0 || group.infos.size() != 0) {
+                    @if(!group.devices.isEmpty()) {
                         <li class="list-group-item disabled">@group.name</li>
-                    }
-                    @for(switch <- group.switches.sortBy(_.name)) {
-                        <li class="list-group-item">
-                            <input type="hidden" name="switch" value="@switch.id"/>
-                            @switch.name:
-                            @if(switch.value) {
-                                <span name="switch@switch.id" class="label label-success">@Messages("home.on")</span>
-                                <div class="pull-right">
-                                    <button name="switchBtn@switch.id" class="label label-info" onclick="switchValue(@switch.id)">@Messages("home.turnoff")</button>
-                                </div>
-                            } else {
-                                <span name="switch@switch.id" class="label label-danger">@Messages("home.off")</span>
-                                <div class="pull-right">
-                                    <button name="switchBtn@switch.id" class="label label-info" onclick="switchValue(@switch.id)">@Messages("home.turnon")</button>
-                                </div>
+                        @for(device <- group.devices.sortBy(_.name)) {
+                            @if(device.deviceType == Device.DeviceType.SWITCH) {
+                                <li class="list-group-item">
+                                    <input type="hidden" name="switch" value="@device.id"/>
+                                    @device.name:
+                                    @if(device.value > 0) {
+                                        <span name="switch@device.id" class="label label-success">@Messages("home.on")</span>
+                                        <div class="pull-right">
+                                            <button name="switchBtn@device.id" class="label label-info" onclick="switchValue(@device.id)">@Messages("home.turnoff")</button>
+                                        </div>
+                                    } else {
+                                        <span name="switch@device.id" class="label label-danger">@Messages("home.off")</span>
+                                        <div class="pull-right">
+                                            <button name="switchBtn@device.id" class="label label-info" onclick="switchValue(@device.id)">@Messages("home.turnon")</button>
+                                        </div>
 
+                                    }
+                                </li>
                             }
-                        </li>
+
+                            @if(device.deviceType == Device.DeviceType.INFO) {
+                                <input type="hidden" name="info" value="@device.id"/>
+                                <li class="list-group-item">@{device.name}: <span name="@device.id">@device.value</span> @device.signature</li>
+                            }
+
+                            @if(device.deviceType == Device.DeviceType.SLIDER) {
+                                <li class="list-group-item">
+                                    <input type="hidden" name="slider" value="@device.id">
+
+                                    @device.name &nbsp;&nbsp;&nbsp;&nbsp;<div name="slider@device.id"></div>&nbsp;&nbsp;<span name="slider@device.id" class="label label-info">@device.value</span>
+                                </li>
+                            }
+                        }
+                        <br>
                     }
 
-                    @for(info <- group.infos.sortBy(_.name)) {
-                        <input type="hidden" name="info" value="@info.id"/>
-                        <li class="list-group-item">@{info.name}: <span name="@info.id">@info.value</span> @info.signature</li>
-                    }
-
-                    @for(slider <- group.sliders.sortBy(_.name)) {
-                        <li class="list-group-item">
-                            <input type="hidden" name="slider" value="@slider.id">
-
-                            @slider.name &nbsp;&nbsp;&nbsp;&nbsp;<div name="slider@slider.id"></div>&nbsp;&nbsp;<span name="slider@slider.id" class="label label-info">@slider.value</span>
-                        </li>
-                    }
-                    <br>
                 }
             </ul>
         </div>

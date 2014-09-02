@@ -5,8 +5,10 @@ import play.api.libs.ws.WSRequest;
 import play.db.ebean.Model;
 import play.libs.F;
 import play.libs.ws.WS;
+import models.Device.*;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class TaskCondition extends Model {
@@ -22,6 +24,9 @@ public class TaskCondition extends Model {
     public final int value;
     public final ConditionType conditionType;
 
+    @ManyToOne
+    public Task task;
+
     public TaskCondition(Device device, int value, ConditionType conditionType) {
         this.device = device;
         this.value = value;
@@ -29,20 +34,18 @@ public class TaskCondition extends Model {
     }
 
     public boolean checkCondition() {
-        if (device instanceof Switch) {
+       /* if (device instanceof Switch) {
             Switch sw = (Switch)device;
             Switch currentSw = Switch.find.byId(sw.id);
 
-            boolean val = value==0?false:true;
-
             switch (conditionType) {
                 case EQ:
-                    if (currentSw.value == val)
+                    if (currentSw.value == value)
                         return true;
                     else
                         return false;
                 case NOT_EQ:
-                    if (currentSw.value != val)
+                    if (currentSw.value != value)
                         return true;
                     else
                         return false;
@@ -127,6 +130,8 @@ public class TaskCondition extends Model {
             }
         } else
             return false;
+            */
+        return false;
     }
 
     public static Finder<Long, TaskCondition> find = new Finder<Long, TaskCondition>(Long.class, TaskCondition.class);
