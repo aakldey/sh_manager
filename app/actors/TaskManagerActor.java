@@ -14,30 +14,16 @@ public class TaskManagerActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof DeviceValueChangedMessage) {
-        /*    tasks.stream().filter(task -> {
+            tasks.stream().filter(task -> {
                 if (task.conditions.stream().filter(condition -> {
-                    Device device = (Device)message;
+                    Device device = ((DeviceValueChangedMessage)(message)).device;
                     if (device.getClass().isInstance(device)) {
-                        if (device.deviceType == Device.DeviceType.SWITCH) {
-                            if (((Switch)device).id == ((Switch)condition.device).id)
-                                return true;
-                            else
-                                return false;
-                        } else if (device instanceof Info) {
-                            if (((Info)device).id == ((Info)condition.device).id)
-                                return true;
-                            else
-                                return false;
-                        } else if (device instanceof Slider) {
-                            if (((Slider)device).id == ((Slider)condition.device).id)
-                                return true;
-                            else
-                                return false;
-                        } else
+                        if (device.id == condition.device.id)
+                            return true;
+                        else
                             return false;
                     } else
                         return false;
-
                 }).count() > 0)
                     return true;
                 else
@@ -45,7 +31,7 @@ public class TaskManagerActor extends UntypedActor {
             }).forEach(task -> {
                 if (task.checkConditions())
                     task.executeTask();
-            });*/
+            });
         } else if (message instanceof SubscribeTaskMessage) {
             tasks.add(((SubscribeTaskMessage) message).task);
         } else if (message instanceof UnsubscribeTaskMessage) {

@@ -432,7 +432,7 @@ public class Application extends Controller {
         if (slider != null) {
             if (value >= 0 && value < 1024) {
                 slider.value = value;
-                Logger.info(value + "");
+                //Logger.info(value + "");
                 deviceManager.tell(new ChangeDeviceValue(slider), ActorRef.noSender());
                 return ok();
             } else {

@@ -38,15 +38,16 @@ public class Global extends GlobalSettings {
             updateManager.tell(new SubscribeDeviceMessage(device), ActorRef.noSender());
         });
 
-       /* Task task = new Task("task1");
+        Task task = new Task("task1");
 
-        TaskCondition cond = new TaskCondition(Info.find.where().eq("name", "Temperature").findUnique(),70, TaskCondition.ConditionType.GREATER);
+        TaskCondition cond = new TaskCondition(Device.find.where().eq("name", "Temperature").findUnique(),25, TaskCondition.ConditionType.GREATER);
         task.conditions.add(cond);
-        TaskActionChange action = new TaskActionChange();
+        Device bulb = Device.find.where().eq("name", "Bulb").findUnique();
+        TaskActionChange action = new TaskActionChange(bulb, 1);
         task.actions.add(action);
 
         taskManager.tell(new SubscribeTaskMessage(task), ActorRef.noSender());
-        */
+
         Akka.system().scheduler().schedule(
                 Duration.create(0, TimeUnit.SECONDS),
                 Duration.create(UPDATE_INTERVAL, TimeUnit.MILLISECONDS),
